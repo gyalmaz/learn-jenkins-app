@@ -34,7 +34,9 @@ pipeline {
             steps {
                 sh '''
                    echo "### Test Stage ###"
+                   echo "### Testing if build/index.html exists ###"
                    test -f build/index.html
+                   echo "### Running npm tests ###"
                    npm test
 
             '''
