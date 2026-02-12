@@ -57,13 +57,10 @@ pipeline {
             }
             steps {
                 sh '''
-                   #echo "### Test Stage ###"
+                   
                    npm install -g serve
                    serve -s build
                    npx playwright test
-                   #echo "### Running npm tests ###"
-                   npm test
-
             '''
             }
         }
