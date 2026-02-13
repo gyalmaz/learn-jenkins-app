@@ -90,10 +90,41 @@ pipeline {
                     echo "Deploying to staging. Side ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
+                    
+                '''
+                script {
+                env.STAGING_URL = sh (script:"node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout=true)
+                }
+            }
+            
+        } // This closes Deploy Stage 
+
+
+        stage('Staging E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.58.2-noble'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+            }   
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
                 '''
             }
-        } // This closes Deploy Stage 
+
+            
+        }
+
+        post {
+            always {
+                junit 'jest-results/junit.xml'
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
+            }
+        }
         stage('Approval') {
             steps {
                 echo 'Waiting for approval....'
@@ -141,10 +172,10 @@ pipeline {
         }
     }  // ← This closes 'stages'
 
-    post {
-        always {
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
+        post {
+            always {
+                junit 'jest-results/junit.xml'
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E', reportTitles: '', useWrapperFileDirectly: true])
+            }
         }
-    }
 }
