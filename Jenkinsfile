@@ -74,7 +74,7 @@ pipeline {
             }  // ← This closes 'parallel'
         }      // ← This closes 'stage('Tests')'
 
-         stage('Deploy Staging') {
+        stage('Deploy Staging') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -93,6 +93,14 @@ pipeline {
                 '''
             }
         } // This closes Deploy Stage 
+        stage('Approval') {
+            steps {
+                echo 'Waiting for approval....'
+                timeout(time: 1, unit: 'HOURS') {
+                    input message: 'Ready to deploy?', ok: 'Yes I am sure I want to deploy.'
+                }
+            }
+        } // This closes Approval
 
         stage('Deploy Production') {
             agent {
