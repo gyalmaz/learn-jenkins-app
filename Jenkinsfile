@@ -119,12 +119,12 @@ pipeline {
             
         }
 
-        post {
-            always {
-                junit 'jest-results/junit.xml'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
-            }
+    post {
+        always {
+            junit 'jest-results/junit.xml'
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
         }
+    }
         stage('Approval') {
             steps {
                 echo 'Waiting for approval....'
