@@ -27,7 +27,6 @@ pipeline {
             }
         }
         
-
         stage('Tests') {
             parallel {
                 stage('Unit test') {
@@ -46,6 +45,11 @@ pipeline {
                             npm test
                         '''
                     }
+                    post {
+                        always {
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
                 }
 
                 stage('E2E') {
@@ -55,7 +59,6 @@ pipeline {
                             reuseNode true
                         }        
                     }
-                         
                     steps {
                         sh '''
                             npm install serve
@@ -66,13 +69,12 @@ pipeline {
                     }
                     post {
                         always {
-                            junit 'jest-results/junit.xml'
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Local E2E', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
-            }  // ← This closes 'parallel'
-        }      // ← This closes 'stage('Tests')'
+            }
+        }
 
         stage('Deploy Staging') {
             agent {
@@ -84,21 +86,17 @@ pipeline {
             steps {
                 sh '''
                     apk add --no-cache bash
-                    echo "Small Change"
                     npm install netlify-cli node-jq
                     node_modules/.bin/netlify --version
-                    echo "Deploying to staging. Side ID = $NETLIFY_SITE_ID"
+                    echo "Deploying to staging. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    
                 '''
                 script {
-                env.STAGING_URL = sh (script:"node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout=true)
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
                 }
             }
-            
-        } // This closes Deploy Stage 
-
+        }
 
         stage('Staging E2E') {
             agent {
@@ -115,16 +113,13 @@ pipeline {
                     npx playwright test --reporter=html
                 '''
             }
-
-            
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectally: true])
+                }
+            }
         }
 
-    post {
-        always {
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
-        }
-    }
         stage('Approval') {
             steps {
                 echo 'Waiting for approval....'
@@ -132,7 +127,7 @@ pipeline {
                     input message: 'Do you wish to deploy to Production?', ok: 'Yes I am sure!'
                 }
             }
-        } // This closes Approval
+        }
 
         stage('Deploy Production') {
             agent {
@@ -144,15 +139,14 @@ pipeline {
             steps {
                 sh '''
                     apk add --no-cache bash
-                    echo "Small Change"
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
-                    echo "Deploying to production. Side ID = $NETLIFY_SITE_ID"
+                    echo "Deploying to production. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
-        } // This closes Deploy Prod
+        }
 
         stage('Prod E2E') {
             agent {
@@ -169,13 +163,17 @@ pipeline {
                     npx playwright test --reporter=html
                 '''
             }
-        }
-    }  // ← This closes 'stages'
-
-        post {
-            always {
-                junit 'jest-results/junit.xml'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E', reportTitles: '', useWrapperFileDirectly: true])
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E', reportTitles: '', useWrapperFileDirectly: true])
+                }
             }
         }
+    }
+
+    post {
+        always {
+            junit 'jest-results/junit.xml'
+        }
+    }
 }
