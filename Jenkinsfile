@@ -55,9 +55,7 @@ pipeline {
                             reuseNode true
                         }        
                     }
-                    environment {
-                            CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
-                    }          
+                         
                     steps {
                         sh '''
                             npm install serve
@@ -102,6 +100,9 @@ pipeline {
                             reuseNode true
                         }
                     }
+                    environment {
+                            CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
+                    }   
                     steps {
                         sh '''
                             npx playwright test --reporter=html
