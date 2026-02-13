@@ -24,39 +24,41 @@ pipeline {
             }
         }
         */
-        stage('Test') {
-            agent {
-                docker {
+
+        stage('Tests') {
+            stage('Unit test') {
+                agent {
+                    docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
 
 
             }
-            steps {
-                sh '''
-                   echo "### Test Stage ###"
-                   echo "### Testing if build/index.html exists ###"
-                   test -f build/index.html
-                   echo "### Running npm tests ###"
-                   npm test
+                steps {
+                    sh '''
+                    echo "### Test Stage ###"
+                    echo "### Testing if build/index.html exists ###"
+                    test -f build/index.html
+                    echo "### Running npm tests ###"
+                    npm test
 
-            '''
-            }
+                    '''
+                }
         }
 
 
-        stage('E2E') {
-            agent {
-                docker {
+            stage('E2E') {
+                agent {
+                    docker {
                     image 'mcr.microsoft.com/playwright:v1.58.2-noble'
                     reuseNode true
                 }
 
 
-            }
-            steps {
-                sh '''
+                }
+                steps {
+                    sh '''
                    
                    npm install serve
                    node_modules/.bin/serve -s build &
@@ -65,6 +67,10 @@ pipeline {
                 '''
             }
         }
+            
+        }
+
+        
     }
 
     post {
