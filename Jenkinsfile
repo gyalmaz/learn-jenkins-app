@@ -53,12 +53,11 @@ pipeline {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.58.2-noble'
                             reuseNode true
-                        }
-                    environment {
-                            
-                            CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
-                        }                   
+                        }        
                     }
+                    environment {
+                            CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
+                    }          
                     steps {
                         sh '''
                             npm install serve
