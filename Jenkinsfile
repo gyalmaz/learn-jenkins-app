@@ -97,7 +97,7 @@ pipeline {
             steps {
                 echo 'Waiting for approval....'
                 timeout(time: 1, unit: 'HOURS') {
-                    input message: 'Ready to deploy?', ok: 'Yes I am sure I want to deploy.'
+                    input message: 'Do you wish to deploy to Production?', ok: 'Yes I am sure!'
                 }
             }
         } // This closes Approval
