@@ -66,12 +66,13 @@ pipeline {
                     }
                     post {
                         always {
-                        junit 'jest-results/junit.xml'
-                        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
-            }
+            }  // ← This closes 'parallel'
+        }      // ← This closes 'stage('Tests')'
 
         stage('Deploy') {
             agent {
@@ -92,29 +93,29 @@ pipeline {
                 '''
             }
         }
-    }
+
         stage('Prod E2E') {
-                    agent {
-                        docker {
-                            image 'mcr.microsoft.com/playwright:v1.58.2-noble'
-                            reuseNode true
-                        }
-                    }
-                    environment {
-                            CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
-                    }   
-                    steps {
-                        sh '''
-                            npx playwright test --reporter=html
-                        '''
-                    }
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.58.2-noble'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
+            }   
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+            }
         }
+    }  // ← This closes 'stages'
 
     post {
         always {
             junit 'jest-results/junit.xml'
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
-            }
-    }
+        }
     }
 }
