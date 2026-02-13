@@ -26,6 +26,7 @@ pipeline {
         */
 
         stage('Tests') {
+            parallel {
             stage('Unit test') {
                 agent {
                     docker {
@@ -46,16 +47,14 @@ pipeline {
                     '''
                 }
         }
-
+            }    
 
             stage('E2E') {
                 agent {
                     docker {
                     image 'mcr.microsoft.com/playwright:v1.58.2-noble'
                     reuseNode true
-                }
-
-
+                    }
                 }
                 steps {
                     sh '''
@@ -65,14 +64,10 @@ pipeline {
                    sleep 10
                    npx playwright test --reporter=html
                 '''
-            }
-        }
-            
-        }
-
-        
+                }
+            }           
+        }       
     }
-
     post {
         always {
             junit 'jest-results/junit.xml'
