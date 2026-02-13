@@ -27,11 +27,11 @@ pipeline {
 
         stage('Tests') {
             parallel {
-            stage('Unit test') {
-                agent {
-                    docker {
-                    image 'node:18-alpine'
-                    reuseNode true
+                stage('Unit test') {
+                    agent {
+                        docker {
+                        image 'node:18-alpine'
+                        reuseNode true
                 }
 
 
@@ -49,11 +49,11 @@ pipeline {
         }
             }    
 
-            stage('E2E') {
-                agent {
-                    docker {
-                    image 'mcr.microsoft.com/playwright:v1.58.2-noble'
-                    reuseNode true
+                stage('E2E') {
+                    agent {
+                        docker {
+                        image 'mcr.microsoft.com/playwright:v1.58.2-noble'
+                        reuseNode true
                     }
                 }
                 steps {
