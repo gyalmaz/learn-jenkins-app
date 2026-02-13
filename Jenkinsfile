@@ -76,6 +76,7 @@ pipeline {
             }
             steps {
                 sh '''
+                    apk add --no-cache bash
                     echo "Small Change"
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
