@@ -96,7 +96,7 @@ pipeline {
         stage('Approval') {
             steps {
                 echo 'Waiting for approval....'
-                timeout(time: 1, unit: 'HOURS') {
+                timeout(time: 15, unit: 'MINUTES') {
                     input message: 'Do you wish to deploy to Production?', ok: 'Yes I am sure!'
                 }
             }
