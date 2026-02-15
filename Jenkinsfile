@@ -129,26 +129,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Production') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    apk add --no-cache bash
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to production. Site ID = $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
-
-        stage('Prod E2E') {
+        stage('Deploy Prod') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.58.2-noble'
@@ -160,6 +141,13 @@ pipeline {
             }   
             steps {
                 sh '''
+                    node --version
+                    apk add --no-cache bash
+                    npm install netlify-cli node-jq
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to staging. Site ID = $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
                     npx playwright test --reporter=html
                 '''
             }
