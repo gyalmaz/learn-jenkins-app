@@ -4,7 +4,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '2512c5d5-ed71-41d3-be42-c1e7e867202e'
         NETLIFY_AUTH_TOKEN = credentials ('netlify-token')
-        REACT_APP_VERSION = "1.2.$BUILD_ID"
+        REACT_APP_VERSION = "1.2.${BUILD_ID}"
     }
 
     stages {
@@ -114,7 +114,7 @@ pipeline {
             }
             environment {
                 CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
-                REACT_APP_VERSION = "1.2.$BUILD_ID"
+                REACT_APP_VERSION = "1.2.${BUILD_ID}"
             }   
             steps {
                 sh '''
