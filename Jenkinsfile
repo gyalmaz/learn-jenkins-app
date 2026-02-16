@@ -123,7 +123,7 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                    node_modules/.bin/netlify deploy --dir=build --prod --json > deploy-output.json
                     echo "REACT_APP_VERSION is: $REACT_APP_VERSION"
                     npx playwright test --reporter=html
                 '''
