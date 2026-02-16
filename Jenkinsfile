@@ -114,6 +114,7 @@ pipeline {
             }
             environment {
                 CI_ENVIRONMENT_URL = 'https://monumental-gaufre-4fae47.netlify.app'
+                REACT_APP_VERSION = "1.2.$BUILD_ID"
             }   
             steps {
                 sh '''
