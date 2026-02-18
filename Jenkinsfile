@@ -23,7 +23,7 @@ pipeline {
                     sh '''
                         aws --version
                         echo "Hello S3!" > index.html
-                        aws s3 cp index.html s3://$"{MY_BUCKET_NAME}"/index.html
+                        aws s3 cp index.html s3://${MY_BUCKET_NAME}/index.html
 
                     '''
                 }
