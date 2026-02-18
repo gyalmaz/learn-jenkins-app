@@ -20,9 +20,6 @@ pipeline {
                 '''
             }
         }
-
-    }
-
         
         stage('Build') {
             agent {
