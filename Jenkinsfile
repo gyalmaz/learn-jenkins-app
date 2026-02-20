@@ -56,6 +56,7 @@ pipeline {
 
 
             }
+        }
 
         stage('Deploy to AWS') {
             agent {
@@ -85,5 +86,4 @@ pipeline {
                 junit 'jest-results/junit.xml'
             }   
         }
-    }
 }
