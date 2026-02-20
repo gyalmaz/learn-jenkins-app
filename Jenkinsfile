@@ -11,10 +11,7 @@ pipeline {
         AWS_ECR_NAME ="767903311120.dkr.ecr.us-east-1.amazonaws.com"
     }
 
-    stages {
-        
-        
-        
+    stages {  
         stage('Build') {
             agent {
                 docker {
@@ -83,9 +80,10 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            junit 'jest-results/junit.xml'
+        post {
+            always {
+                junit 'jest-results/junit.xml'
+            }   
         }
     }
 }
