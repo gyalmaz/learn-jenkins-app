@@ -2,3 +2,4 @@ FROM amazon/aws-cli
 RUN yum update -y && \
     yum install -y docker jq && \
     yum clean all
+ENV DOCKER_API_VERSION=1.44
